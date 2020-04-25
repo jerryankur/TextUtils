@@ -9,13 +9,12 @@ def index(request):
 
 def analyze(request):
 	djtext = request.POST.get('text', 'default')
-
 	removepunc = request.POST.get('removepunc', 'off')
 	fullcaps = request.POST.get('fullcaps', 'off')
 	newlineremover = request.POST.get('newlineremover', 'off')
 	extraspaceremover = request.POST.get('extraspaceremover', 'off')
 
-	params = {'purpose': '', 'analyzed_text': djtext}
+	params = {'purpose': '', 'analyzed_text': None}
 	if removepunc == "on":
 		punctuations = ''':()-[]{};:'"\,<>./?@#$%^&*_~'''
 		params['analyzed_text'] = ''
@@ -50,23 +49,7 @@ def analyze(request):
 			params['analyzed_text'] += char
 		params['purpose'] += 'Removed Extra Spaces '
 
+	if params['analyzed_text'] is None:
+		return HttpResponse('Please select an operation')
+
 	return render(request, 'analyze.html', params)
-
-
-
-"""
-def capfirst(request):
-	return HttpResponse("capitalize first")
-
-
-def newlineremove(request):
-	return HttpResponse("new line remover")
-
-
-def spaceremove(request):
-	return HttpResponse("space remover")
-
-
-def charcount(request):
-	return HttpResponse("character count")
-"""
