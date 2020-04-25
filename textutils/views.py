@@ -8,50 +8,50 @@ def index(request):
 
 
 def analyze(request):
-	djtext = request.GET.get('text', 'default')
+	djtext = request.POST.get('text', 'default')
 
-	removepunc = request.GET.get('removepunc', 'off')
-	fullcaps = request.GET.get('fullcaps', 'off')
-	newlineremover = request.GET.get('newlineremover', 'off')
-	extraspaceremover = request.GET.get('extraspaceremover', 'off')
+	removepunc = request.POST.get('removepunc', 'off')
+	fullcaps = request.POST.get('fullcaps', 'off')
+	newlineremover = request.POST.get('newlineremover', 'off')
+	extraspaceremover = request.POST.get('extraspaceremover', 'off')
 
+	params = {'purpose': '', 'analyzed_text': djtext}
 	if removepunc == "on":
 		punctuations = ''':()-[]{};:'"\,<>./?@#$%^&*_~'''
-		analyzed = ''
+		params['analyzed_text'] = ''
 		for char in djtext:
 			if char not in punctuations:
-				analyzed += char
-		params = {'purpose': 'Removed Punctuations', 'analyzed_text': analyzed}
-		return render(request, 'analyze.html', params)
+				params['analyzed_text'] += char
+		params['purpose'] += 'Removed Punctuations '
+		djtext= params['analyzed_text']
 
-	elif fullcaps == "on":
-		analyzed = ''
+	if fullcaps == "on":
+		params['analyzed_text'] = ''
 		for char in djtext:
-			analyzed += char.upper()
-		params = {'purpose': 'Changed to Uppercase', 'analyzed_text': analyzed}
-		return render(request, 'analyze.html', params)
+			params['analyzed_text'] += char.upper()
+		params['purpose'] += 'Changed to Uppercase '
+		djtext= params['analyzed_text']
 
-	elif newlineremover == "on":
-		analyzed = ''
+	if newlineremover == "on":
+		params['analyzed_text'] = ''
 		for char in djtext:
-			if char != '\n':
-				analyzed += char
-		params = {'purpose': 'Removed NewLines', 'analyzed_text': analyzed}
-		return render(request, 'analyze.html', params)
+			if char != '\n' and char !='\r':
+				params['analyzed_text'] += char
+		params['purpose'] += 'Removed NewLines '
+		djtext = params['analyzed_text']
 
-	elif extraspaceremover == "on":
-		analyzed = ''
+	if extraspaceremover == "on":
+		params['analyzed_text'] = ''
 		c = None
 		for char in djtext:
 			if char == ' ' and c == ' ':
 				continue
 			c = char
-			analyzed += char
-		params = {'purpose': 'Removed Extra Spaces', 'analyzed_text': analyzed}
-		return render(request, 'analyze.html', params)
+			params['analyzed_text'] += char
+		params['purpose'] += 'Removed Extra Spaces '
 
-	else:
-		return HttpResponse("Error")
+	return render(request, 'analyze.html', params)
+
 
 
 """
